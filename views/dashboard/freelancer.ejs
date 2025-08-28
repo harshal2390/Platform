@@ -1,0 +1,51 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="container mt-4">
+  <h2 class="mb-4">📌 My Applications</h2>
+
+  <% if (applications.length === 0) { %>
+  <div class="alert alert-info">You haven't applied to any projects yet.</div>
+  <% } else { %>
+  <table class="table table-bordered table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>Project</th>
+        <th>Employer</th>
+        <th>Budget</th>
+        <th>Bid</th>
+        <th>Timeline</th>
+        <th>Cover Letter</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% applications.forEach(app => { %>
+      <tr>
+        <td>
+          <a href="/projects/<%= app.project._id %>">
+            <%= app.project.title %>
+          </a>
+        </td>
+        <td><%= app.project.employer?.name || "Unknown" %></td>
+        <td>
+          <%= app.project.currency %> <%= app.project.budgetMin %> - <%=
+          app.project.budgetMax %>
+        </td>
+        <td><%= app.bidAmount %></td>
+        <td><%= app.proposedTimeline %></td>
+        <td><%= app.coverLetter %></td>
+        <td>
+          <% if (app.status === "accepted") { %>
+          <span class="badge bg-success">Accepted</span>
+          <% } else if (app.status === "rejected") { %>
+          <span class="badge bg-danger">Rejected</span>
+          <% } else { %>
+          <span class="badge bg-secondary">Pending</span>
+          <% } %>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <% } %>
+</div>

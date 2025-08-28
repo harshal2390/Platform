@@ -1,0 +1,117 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="row mt-4">
+  <div class="col-lg-8 offset-lg-2">
+    <h2 class="mb-4 text-center">Edit Project</h2>
+    <form
+      action="/projects/<%= project._id %>?_method=PUT"
+      method="POST"
+      enctype="multipart/form-data"
+      novalidate
+      class="needs-validation"
+    >
+      <!-- Title -->
+      <div class="mb-3">
+        <label for="title" class="form-label">Project Title</label>
+        <input
+          type="text"
+          name="project[title]"
+          value="<%= project.title %>"
+          placeholder="Enter a catchy title"
+          class="form-control"
+          required
+        />
+        <div class="invalid-feedback">Title is required.</div>
+      </div>
+
+      <!-- Description -->
+      <div class="mb-3">
+        <label for="description" class="form-label">Project Description</label>
+        <textarea
+          name="project[description]"
+          placeholder="Describe your project requirements"
+          class="form-control"
+          rows="4"
+          required
+        ><%= project.description %></textarea>
+        <div class="invalid-feedback">Description is required.</div>
+      </div>
+
+      <!-- Image Upload -->
+      <div class="mb-3">
+        <label for="image" class="form-label">Upload Image</label>
+        <input type="file" name="project[image]" class="form-control" />
+        <% if (project.image && project.image.url) { %>
+          <div class="mt-2">
+            <img src="<%= project.image.url %>" alt="Project Image" class="img-thumbnail" width="150" />
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Budget -->
+      <div class="row">
+        <div class="mb-3 col-md-4">
+          <label for="budgetMin" class="form-label">Minimum Budget</label>
+          <input
+            type="number"
+            name="project[budgetMin]"
+            value="<%= project.budgetMin %>"
+            placeholder="e.g. 500"
+            class="form-control"
+            required
+          />
+        </div>
+        <div class="mb-3 col-md-4">
+          <label for="budgetMax" class="form-label">Maximum Budget</label>
+          <input
+            type="number"
+            name="project[budgetMax]"
+            value="<%= project.budgetMax %>"
+            placeholder="e.g. 2000"
+            class="form-control"
+            required
+          />
+        </div>
+        <div class="mb-3 col-md-4">
+          <label for="currency" class="form-label">Currency</label>
+          <select name="project[currency]" class="form-select">
+            <option value="USD" <%= project.currency === "USD" ? "selected" : "" %> >USD</option>
+            <option value="INR" <%= project.currency === "INR" ? "selected" : "" %> >INR</option>
+            <option value="EUR" <%= project.currency === "EUR" ? "selected" : "" %> >EUR</option>
+            <option value="GBP" <%= project.currency === "GBP" ? "selected" : "" %> >GBP</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="mb-3">
+        <label for="timeline" class="form-label">Timeline</label>
+        <input
+          type="text"
+          name="project[timeline]"
+          value="<%= project.timeline %>"
+          placeholder="e.g. 2 weeks, 1 month"
+          class="form-control"
+        />
+      </div>
+
+      <!-- Skills -->
+      <div class="mb-3">
+        <label for="skills" class="form-label">Required Skills</label>
+        <input
+          type="text"
+          name="project[skills]"
+          value="<%= project.skills ? project.skills.join(', ') : '' %>"
+          placeholder="e.g. JavaScript, Node.js, React"
+          class="form-control"
+        />
+        <div class="form-text">Separate multiple skills with commas.</div>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn btn-dark w-100 mt-3">
+        <i class="fa-solid fa-pen-to-square"></i> Update Project
+      </button>
+    </form>
+  </div>
+</div>

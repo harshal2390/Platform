@@ -1,0 +1,89 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="container mt-5">
+  <h2 class="fw-bold mb-4 text-primary">📂 Ongoing Contracts</h2>
+
+  <% if (contracts.length === 0) { %>
+  <div class="alert alert-info text-center shadow-sm p-3 rounded">
+    🚀 You don’t have any ongoing contracts yet.
+  </div>
+  <% } else { %>
+  <div class="row g-4">
+    <% contracts.forEach(contract => { %>
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-sm border-0 h-100 rounded-4">
+        <div class="card-body d-flex flex-column">
+          <!-- Project -->
+          <h5 class="card-title mb-2 text-dark fw-bold">
+            <a
+              href="/projects/<%= contract.project._id %>"
+              class="text-decoration-none text-primary"
+            >
+              <%= contract.project.title %>
+            </a>
+          </h5>
+
+          <!-- Freelancer -->
+          <p class="mb-2 text-muted">
+            👤 <strong><%= contract.freelancer?.name %></strong>
+            <br />
+            <small><%= contract.freelancer?.email %></small>
+          </p>
+
+          <!-- Budget Info -->
+          <p class="mb-1">
+            💰 <strong>Budget:</strong>
+            <%= contract.project.currency %> <%= contract.project.budgetMin %> -
+            <%= contract.project.budgetMax %>
+          </p>
+
+          <!-- Agreed Amount -->
+          <p class="mb-3">
+            🤝 <strong>Agreed:</strong>
+            <%= contract.currency %> <%= contract.amount %>
+          </p>
+
+          <!-- Status -->
+          <div class="mb-3">
+            <% if(contract.status === "pending_payment") { %>
+            <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">
+              ⏳ Pending Payment
+            </span>
+            <% } else if(contract.status === "in_progress") { %>
+            <span class="badge bg-primary px-3 py-2 rounded-pill">
+              🚀 In Progress
+            </span>
+            <% } else if(contract.status === "completed") { %>
+            <span class="badge bg-success px-3 py-2 rounded-pill">
+              ✅ Completed
+            </span>
+            <% } else { %>
+            <span class="badge bg-danger px-3 py-2 rounded-pill">
+              ❌ Cancelled
+            </span>
+            <% } %>
+          </div>
+
+          <!-- Chat Action -->
+          <div class="mt-auto">
+            <a
+              href="/chat/<%= contract._id %>"
+              class="btn btn-outline-primary w-100 rounded-pill"
+            >
+              💬 Chat with <%= contract.freelancer?.name %>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+  <% } %>
+</div>
+
+<script>
+  // No fetch call anymore. Just redirect when button clicked.
+  function startChat(contractId) {
+    window.location.href = `/chat/${contractId}`;
+  }
+</script>

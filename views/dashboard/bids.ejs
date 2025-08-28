@@ -1,0 +1,111 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="container py-5">
+  <h2 class="mb-4 fw-bold text-center">📋 Bids on Your Projects</h2>
+
+  <% if (projects.length === 0) { %>
+  <div class="alert alert-info text-center shadow-sm rounded">
+    You haven't posted any projects yet.
+  </div>
+  <% } else { %> <% projects.forEach(project => { %>
+  <div class="card mb-5 shadow-lg border-0 rounded-3">
+    <!-- Project Header -->
+    <div
+      class="card-header bg-gradient bg-dark text-white d-flex justify-content-between align-items-center"
+    >
+      <h4 class="mb-0"><%= project.title %></h4>
+      <span class="badge bg-info text-dark px-3 py-2">
+        Status: <%= project.status %>
+      </span>
+    </div>
+
+    <!-- Project Body -->
+    <div class="card-body">
+      <% if (project.applications.length === 0) { %>
+      <div class="alert alert-warning text-center">
+        🚫 No bids yet for this project.
+      </div>
+      <% } else { %>
+      <div class="table-responsive">
+        <table class="table align-middle table-hover text-center">
+          <thead class="table-dark">
+            <tr>
+              <th>👤 Freelancer</th>
+              <th>💰 Bid</th>
+              <th>⏳ Timeline</th>
+              <th>📝 Cover Letter</th>
+              <th>📌 Status</th>
+              <th>⚡ Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% project.applications.forEach(app => { %>
+            <tr
+              class="<%= app.status === 'accepted' ? 'table-success' : app.status === 'rejected' ? 'table-danger' : '' %>"
+            >
+              <td>
+                <div class="fw-semibold"><%= app.freelancer?.name %></div>
+                <small class="text-muted"><%= app.freelancer?.email %></small>
+              </td>
+              <td class="fw-bold text-success">
+                <%= app.bidAmount %> <%= project.currency %>
+              </td>
+              <td><%= app.proposedTimeline %></td>
+              <td class="text-start">
+                <span
+                  class="text-muted d-inline-block"
+                  style="
+                    max-width: 250px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                  "
+                >
+                  <%= app.coverLetter %>
+                </span>
+              </td>
+              <td>
+                <% if (app.status === "accepted") { %>
+                <span class="badge bg-success px-3 py-2">✅ Accepted</span>
+                <% } else if (app.status === "rejected") { %>
+                <span class="badge bg-danger px-3 py-2">❌ Rejected</span>
+                <% } else { %>
+                <span class="badge bg-secondary px-3 py-2">📨 Applied</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (app.status === "applied") { %>
+                <form
+                  action="/dashboard/bids/<%= app._id %>/accept"
+                  method="POST"
+                  class="d-inline"
+                >
+                  <button class="btn btn-sm btn-success shadow-sm">
+                    Accept
+                  </button>
+                </form>
+                <form
+                  action="/dashboard/bids/<%= app._id %>/reject"
+                  method="POST"
+                  class="d-inline"
+                >
+                  <button class="btn btn-sm btn-danger shadow-sm">
+                    Reject
+                  </button>
+                </form>
+                <% } else { %>
+                <button class="btn btn-sm btn-outline-secondary" disabled>
+                  No Action
+                </button>
+                <% } %>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <% } %>
+    </div>
+  </div>
+  <% }) %> <% } %>
+</div>

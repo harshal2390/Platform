@@ -1,0 +1,87 @@
+<style>
+  .search-btn {
+    background-color: #fe424d;
+    color: #fff;
+    border-radius: 25px;
+    padding: 0 1rem;
+  }
+
+  .search-btn:hover {
+    background-color: #e63b46;
+    color: #fff;
+  }
+
+  .search-btn i {
+    margin-right: 0.5rem;
+  }
+
+  .search-inp {
+    border-radius: 25px;
+    padding: 0.5rem 1.2rem;
+    font-size: 1rem;
+  }
+</style>
+
+<nav
+  class="navbar navbar-expand-md bg-light border-bottom sticky-top shadow-sm"
+>
+  <div class="container-fluid">
+    <!-- Brand -->
+    <a class="navbar-brand fw-bold text-danger" href="/">
+      <i class="fa-regular fa-compass"></i> FreelanceHub
+    </a>
+
+    <!-- Toggle button -->
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNavAltMarkup"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navbar content -->
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <!-- Left side links -->
+      <div class="navbar-nav me-auto">
+        <a class="nav-link" href="/">Explore</a>
+      </div>
+
+      <!-- Search bar (centered on large screens) -->
+      <form class="d-flex mx-md-3 my-2 my-md-0" role="search">
+        <input
+          class="form-control search-inp me-2"
+          type="search"
+          placeholder="Search projects..."
+        />
+        <button class="btn search-btn" type="submit">
+          <i class="fa-solid fa-magnifying-glass"></i>Search
+        </button>
+      </form>
+
+      <!-- Right side (Auth + Role-based Links) -->
+      <div class="navbar-nav">
+        <% if (!currUser) { %>
+        <a class="nav-link" href="/signup"><b>Sign up</b></a>
+        <a class="nav-link" href="/login"><b>Log in</b></a>
+        <% } else { %> <% if (currUser.role === "freelancer") { %>
+        <a class="nav-link" href="/dashboard/my-applications"
+          >Applied Projects</a
+        >
+        <a class="nav-link" href="freelancer/ongoing">Ongoing</a>
+        <a class="nav-link" href="/freelancer/earnings">Earnings</a>
+        <% } else if (currUser.role === "employer") { %>
+        <a class="nav-link" href="/projects/my-projects">My Projects</a>
+        <a class="nav-link" href="/dashboard/bids">Bids</a>
+        <a class="nav-link" href="/dashboard/ongoing">Ongoing</a>
+        <a class="nav-link text-success fw-semibold" href="/projects/new">
+          <i class="fa-solid fa-plus"></i> Add Project
+        </a>
+        <% } %>
+        <a class="nav-link text-danger" href="/logout"><b>Log out</b></a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</nav>
