@@ -90,3 +90,23 @@ module.exports.loginPost = [
     res.redirect("/home");
   },
 ];
+
+// 🚪 Logout controller (fixed)
+module.exports.logout = (req, res, next) => {
+  req.logout((err) => {
+    if (err) return next(err);
+
+    // ⚡ set flash BEFORE destroying session
+    req.flash("success", "You have been logged out successfully.");
+
+    // Now destroy session
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Error destroying session:", err);
+      }
+
+      res.clearCookie("connect.sid"); // remove cookie
+      res.redirect("/login"); // redirect user
+    });
+  });
+};
