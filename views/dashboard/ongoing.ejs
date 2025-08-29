@@ -29,8 +29,7 @@
 
           <!-- Freelancer -->
           <p class="mb-2 text-muted">
-            👤 <strong><%= contract.freelancer?.name %></strong>
-            <br />
+            👤 <strong><%= contract.freelancer?.name %></strong><br />
             <small><%= contract.freelancer?.email %></small>
           </p>
 
@@ -43,8 +42,8 @@
 
           <!-- Agreed Amount -->
           <p class="mb-3">
-            🤝 <strong>Agreed:</strong>
-            <%= contract.currency %> <%= contract.amount %>
+            🤝 <strong>Agreed:</strong> <%= contract.currency %> <%=
+            contract.amount %>
           </p>
 
           <!-- Status -->
@@ -73,7 +72,7 @@
             <% if(contract.status === "pending_payment") { %>
             <button
               class="btn btn-warning w-100 rounded-pill mb-2"
-              onclick="showCardModal('<%= contract._id %>')"
+              onclick="showCardModal('<%= contract._id %>', '<%= contract.amount %>')"
             >
               💰 Fund Escrow
             </button>
@@ -108,6 +107,7 @@
       <h5>Enter Card Details</h5>
       <div id="card-element" class="mb-3"></div>
       <button id="payBtn" class="btn btn-primary w-100 mt-3">Pay</button>
+      <div id="payment-status" class="mt-2 text-muted small"></div>
     </div>
   </div>
 </div>
@@ -116,21 +116,28 @@
 <script src="https://js.stripe.com/v3/"></script>
 
 <script>
-  // Stripe Elements setup
-  let stripe = Stripe("<%= process.env.STRIPE_PUBLISHABLE_KEY %>");
-  let elements = stripe.elements();
-  let card = elements.create("card");
-  let currentContractId = null;
-
+  // Stripe setup
+  const stripe = Stripe("<%= process.env.STRIPE_PUBLISHABLE_KEY %>");
+  const elements = stripe.elements();
+  const card = elements.create("card");
   card.mount("#card-element");
 
-  function showCardModal(contractId) {
+  let currentContractId = null;
+
+  function showCardModal(contractId, amount) {
     currentContractId = contractId;
+    document.getElementById("payment-status").innerText = "";
     $("#cardModal").modal("show");
   }
 
   document.getElementById("payBtn").addEventListener("click", async () => {
     if (!currentContractId) return;
+
+    const payBtn = document.getElementById("payBtn");
+    const statusEl = document.getElementById("payment-status");
+
+    payBtn.disabled = true;
+    statusEl.innerText = "⏳ Processing payment...";
 
     try {
       const res = await fetch(`/payment/create-escrow/${currentContractId}`, {
@@ -139,24 +146,33 @@
       });
 
       const data = await res.json();
-      if (!data.clientSecret) return alert("Failed to create payment");
+      if (!data.clientSecret) {
+        statusEl.innerText = "❌ Failed to create escrow";
+        payBtn.disabled = false;
+        return;
+      }
 
       const { error, paymentIntent } = await stripe.confirmCardPayment(
         data.clientSecret,
         {
-          payment_method: { card, billing_details: { name: "Employer Name" } },
+          payment_method: { card, billing_details: { name: "Employer" } },
         }
       );
 
       if (error) {
-        alert("Payment failed: " + error.message);
+        statusEl.innerText = "❌ Payment failed: " + error.message;
+        payBtn.disabled = false;
       } else if (paymentIntent.status === "succeeded") {
-        alert("Payment funded successfully!");
-        location.reload();
+        statusEl.innerText = "✅ Payment funded successfully!";
+        setTimeout(() => {
+          $("#cardModal").modal("hide");
+          location.reload();
+        }, 1200);
       }
     } catch (err) {
       console.error(err);
-      alert("Something went wrong while funding escrow");
+      statusEl.innerText = "❌ Something went wrong while funding escrow";
+      payBtn.disabled = false;
     }
   });
 
@@ -168,10 +184,10 @@
       });
       const data = await res.json();
       if (data.success) {
-        alert("Payment released to freelancer!");
+        alert("💵 Payment released to freelancer!");
         location.reload();
       } else {
-        alert("Failed to release payment");
+        alert("❌ Failed to release payment");
       }
     } catch (err) {
       console.error(err);

@@ -16,6 +16,8 @@ const Message = require("./models/chatModel"); // adjust path if needed
 // server.js or app.js
 const paymentRoutes = require("./routes/paymentRoutes");
 const stripeOnboardRoutes = require("./routes/stripeRoutes");
+const Stripe = require("stripe");
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const User = require("./models/userModel");
 const chatRoutes = require("./routes/chatRoutes");
@@ -143,6 +145,44 @@ app.use("/projects", projectRoutes);
 app.use("/chat", chatRoutes);
 app.use("/payment", paymentRoutes);
 app.use("/stripe", stripeOnboardRoutes);
+
+// If user cancels onboarding
+app.get("/stripe/refresh", (req, res) => {
+  req.flash("error", "Onboarding canceled. Please try again.");
+  res.redirect("/dashboard/freelancer");
+});
+
+// After onboarding completed
+app.get("/stripe/return", async (req, res, next) => {
+  try {
+    if (!req.user || !req.user.stripeAccountId) {
+      req.flash("error", "No Stripe account found.");
+      return res.redirect("/login"); // fallback if session lost
+    }
+
+    const account = await stripe.accounts.retrieve(req.user.stripeAccountId);
+
+    if (account.details_submitted) {
+      req.user.stripeOnboardingComplete = true;
+      await req.user.save();
+
+      // 🔑 Re-login to refresh session (important!)
+      req.login(req.user, (err) => {
+        if (err) return next(err);
+
+        req.flash("success", "Stripe onboarding completed!");
+        return res.redirect("/dashboard/freelancer");
+      });
+    } else {
+      req.flash("error", "Onboarding not finished. Please try again.");
+      res.redirect("/dashboard/freelancer");
+    }
+  } catch (err) {
+    console.error("Stripe return error:", err);
+    req.flash("error", "Something went wrong with Stripe onboarding.");
+    res.redirect("/dashboard/freelancer");
+  }
+});
 
 // -------------------- START SERVER --------------------
 const PORT = process.env.PORT || 3000;

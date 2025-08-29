@@ -4,7 +4,7 @@
   <div class="col-6 offset-3">
     <form action="/signup" method="post" class="needs-validation" novalidate>
       <div class="mb-3">
-        <label for="name" class="form-label">name</label>
+        <label for="name" class="form-label">Name</label>
         <input
           type="text"
           name="name"
@@ -46,7 +46,35 @@
         </select>
       </div>
 
+      <!-- ✅ Onboarding checkbox (shown only if Freelancer is selected) -->
+      <div class="mb-3" id="onboardingCheckbox" style="display: none">
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            name="doOnboardingNow"
+            id="doOnboardingNow"
+            value="true"
+          />
+          <label class="form-check-label" for="doOnboardingNow">
+            Complete Stripe Onboarding now (required to receive payouts)
+          </label>
+        </div>
+      </div>
+
       <button class="btn btn-success">Sign Up</button>
     </form>
   </div>
 </div>
+
+<script>
+  // ✅ Show checkbox only if freelancer is selected
+  document.getElementById("role").addEventListener("change", function () {
+    const onboardingBox = document.getElementById("onboardingCheckbox");
+    if (this.value === "freelancer") {
+      onboardingBox.style.display = "block";
+    } else {
+      onboardingBox.style.display = "none";
+    }
+  });
+</script>

@@ -35,7 +35,34 @@
     display: flex;
     align-items: center;
   }
+
+  .onboarding-alert {
+    margin: 1rem 0;
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
 </style>
+
+<!-- ✅ Stripe Onboarding Section -->
+<% if (user && user.role === "freelancer") { %> <% if
+(!user.stripeOnboardingComplete) { %>
+<div class="onboarding-alert alert alert-warning">
+  ⚠️ You need to complete Stripe onboarding to receive payments.
+  <form
+    action="/stripe/onboard-freelancer/<%= user._id %>"
+    method="POST"
+    style="display: inline"
+  >
+    <button type="submit" class="btn btn-primary btn-sm">
+      Complete Onboarding
+    </button>
+  </form>
+</div>
+<% } else { %>
+<div class="onboarding-alert alert alert-success">
+  ✅ Stripe onboarding completed. You can now receive payments.
+</div>
+<% } %> <% } %>
 
 <div id="filters">
   <div class="filter">
@@ -67,9 +94,9 @@
         role="switch"
         id="flexswitchCheckDefault"
       />
-      <label class="form-check-label" for="switchCheckDefault"
-        >Show extra costs</label
-      >
+      <label class="form-check-label" for="switchCheckDefault">
+        Show extra costs
+      </label>
     </div>
   </div>
 </div>
@@ -93,9 +120,9 @@
           <i class="tax-info">&nbsp; &nbsp;+ Platform Fees</i> <br />
           <small class="text-muted">Timeline: <%= project.timeline %></small
           ><br />
-          <small class="text-muted"
-            >Skills: <%= project.skills.join(", ") %></small
-          >
+          <small class="text-muted">
+            Skills: <%= project.skills.join(", ") %>
+          </small>
         </p>
       </div>
     </div>
