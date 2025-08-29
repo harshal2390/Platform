@@ -13,6 +13,9 @@ const LocalStrategy = require("passport-local");
 const http = require("http");
 const { Server } = require("socket.io");
 const Message = require("./models/chatModel"); // adjust path if needed
+// server.js or app.js
+const paymentRoutes = require("./routes/paymentRoutes");
+const stripeOnboardRoutes = require("./routes/stripeRoutes");
 
 const User = require("./models/userModel");
 const chatRoutes = require("./routes/chatRoutes");
@@ -138,6 +141,8 @@ app.use("/", authRouter);
 app.use("/dashboard", dashboardRoutes);
 app.use("/projects", projectRoutes);
 app.use("/chat", chatRoutes);
+app.use("/payment", paymentRoutes);
+app.use("/stripe", stripeOnboardRoutes);
 
 // -------------------- START SERVER --------------------
 const PORT = process.env.PORT || 3000;

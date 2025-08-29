@@ -10,6 +10,9 @@ const userSchema = new Schema(
     bio: String,
     skills: [String],
     profilePic: String,
+    // Stripe fields (only for freelancers)
+    stripeAccountId: { type: String },
+    stripeOnboardingComplete: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const paymentSchema = new Schema(
@@ -9,32 +9,21 @@ const paymentSchema = new Schema(
       ref: "Contract",
       required: true,
     },
-
-    payerId: { type: Schema.Types.ObjectId, ref: "User", required: true }, // employer
-    payeeId: { type: Schema.Types.ObjectId, ref: "User", required: true }, // freelancer
-
+    payerId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    payeeId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     amount: { type: Number, required: true },
     currency: { type: String, default: "USD" },
-
     provider: {
       type: String,
       enum: ["stripe", "razorpay", "paypal"],
       required: true,
     },
-    transactionId: String, // Payment reference from provider (Stripe PI, Razorpay Order, etc.)
-
-    commission: { type: Number, default: 0 }, // platform’s fee
-    netAmount: { type: Number }, // amount freelancer will receive after commission
-
+    transactionId: String,
+    commission: { type: Number, default: 0 },
+    netAmount: { type: Number },
     status: {
       type: String,
-      enum: [
-        "initiated", // payment started
-        "escrowed", // funds held in escrow
-        "released", // funds paid out to freelancer
-        "refunded", // funds returned to employer
-        "failed", // payment failed
-      ],
+      enum: ["initiated", "escrowed", "released", "refunded", "failed"],
       default: "initiated",
     },
   },
@@ -44,4 +33,4 @@ const paymentSchema = new Schema(
 const Payment =
   mongoose.models.Payment || mongoose.model("Payment", paymentSchema);
 
-export default Payment;
+module.exports = Payment; // ✅ CommonJS export
